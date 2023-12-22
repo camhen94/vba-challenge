@@ -1,0 +1,103 @@
+Sub StockAnalysis()
+
+    For Each ws In Worksheets
+    
+        Dim WorksheetName As String
+        Dim tickerCount As Long
+        Dim lastRowA As Long
+        Dim lastRowI As Long
+        Dim percentChange As Double
+        Dim greatIncrease As Double
+        Dim greatDecrease As Double
+        Dim greatVolume As Double
+    
+        tickerCount = 2
+        
+        j = 2
+        
+        lastRowA = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+            For i = 2 To lastRowA
+            
+                If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                
+                    ws.Cells(tickerCount, 9).Value = ws.Cells(i, 1).Value
+                    ws.Cells(tickerCount, 10).Value = ws.Cells(i, 6).Value - ws.Cells(j, 3).Value
+                
+                    If ws.Cells(tickerCount, 10).Value < 0 Then
+                
+                        ws.Cells(tickerCount, 10).Interior.ColorIndex = 3
+                
+                    Else
+                
+                        ws.Cells(tickerCount, 10).Interior.ColorIndex = 4
+                
+                    End If
+                    
+                    If ws.Cells(j, 3).Value <> 0 Then
+                        percentChange = ((ws.Cells(i, 6).Value - ws.Cells(j, 3).Value) / ws.Cells(j, 3).Value)
+                        ws.Cells(tickerCount, 11).Value = percentChange
+                    
+                    Else
+                    
+                        ws.Cells(tickerCount, 11).Value = Format(0, "Percent")
+                    
+                    End If
+                    
+                ws.Cells(tickerCount, 12).Value = WorksheetFunction.Sum(Range(ws.Cells(j, 7), ws.Cells(i, 7)))
+                
+                tickerCount = tickerCount + 1
+                
+                j = i + 1
+                
+                End If
+            
+            Next i
+            
+        lastRowI = ws.Cells(Rows.Count, 9).End(xlUp).Row
+        
+        greatVolume = ws.Cells(2, 12).Value
+        greatIncrease = ws.Cells(2, 11).Value
+        greatDecrease = ws.Cells(2, 11).Value
+    
+            For i = 2 To lastRowI
+    
+                If ws.Cells(i, 12).Value > greatVolume Then
+                    greatVolume = ws.Cells(i, 12).Value
+                    ws.Cells(4, 16).Value = ws.Cells(i, 9).Value
+                
+                Else
+                
+                    greatVolume = greatVolume
+                
+                End If
+                
+                If ws.Cells(i, 11).Value > greatIncrease Then
+                    greatIncrease = ws.Cells(i, 11).Value
+                    ws.Cells(2, 16).Value = ws.Cells(i, 9).Value
+                
+                Else
+                
+                    greatIncrease = greatIncrease
+                
+                End If
+                
+                If ws.Cells(i, 11).Value < greatDecrease Then
+                    greatDecrease = ws.Cells(i, 11).Value
+                    ws.Cells(3, 16).Value = ws.Cells(i, 9).Value
+                
+                Else
+                
+                    greatDecrease = greatDecrease
+                
+                End If
+                
+            ws.Range("Q2").Value = greatIncrease
+            ws.Range("Q3").Value = greatDecrease
+            ws.Range("Q4").Value = greatVolume
+            
+            Next i
+            
+    Next ws
+        
+End Sub
